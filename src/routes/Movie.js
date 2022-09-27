@@ -5,14 +5,20 @@ import styled from "styled-components";
 const GET_MOVIE = gql`
   query getMovie($movieId: String!) {
     movie(id: $movieId) {
-       id
-       title
-       medium_cover_image
-       rating
+        id
+        title
+        medium_cover_image
+        rating
+        isLiked @client
     }
-  }
-`;
+}`;
+// [remote field]
+// page가 로딩되면 Apollo는 api에 remote field를 요청
+// -> id, title, medium_cover_image, rating
 
+// [local only field]
+// local only field는 절대 api로 가지 않는 field (cache에서만 활동)
+// -> isLiked @client
 const Container = styled.div`
   height: 100vh;
   background-image: linear-gradient(-45deg, #d754ab, #fd723a);
@@ -63,6 +69,7 @@ export default function Movie() {
       <Column>
         <Title>{loading ? "Loading..." : `${data.movie?.title}`}</Title>
         <Subtitle>⭐️ {data?.movie?.rating}</Subtitle>
+        <button>{data?.movie?.isLiked ? "Unlike" : "Like"}</button>
       </Column>
       <Image bg={data?.movie?.medium_cover_image} />
     </Container>
