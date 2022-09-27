@@ -1,28 +1,41 @@
-import { useApolloClient, gql } from "@apollo/client"
-import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+
+const ALL_MOVIES = gql`
+  query getMovies {
+    allMovies {
+      title
+      id
+    }
+    allTweets {
+      id
+      text
+      author {
+        fullName
+      }
+    }
+  }
+`;
 
 export default function Movies() {
-    const [movies, setMovies] = useState([]);
-    const client = useApolloClient(); // index.js 의 ApolloProvider 덕에 접근이 가능
-    useEffect(() => {
-        client
-          .query({
-            query: gql`
-              {
-                allMovies {
-                  title
-                  id
-                }
-              }
-            `,
-          })
-          .then((results) => setMovies(results.data.allMovies));
-      }, [client]);
-      return (
-        <ul>
-          {movies.map((movie) => (
+    const { data, loading, error } = useQuery(ALL_MOVIES);
+    if (loading) {
+      return <h1>Loading...</h1>;
+    }
+    if (error) {
+      return <h1>Could not fetch :(</h1>;
+    }
+    return (
+    <ul>
+        <h1>Movies</h1>
+        {data.allMovies.map((movie) => (
             <li key={movie.id}>{movie.title}</li>
-          ))}
-        </ul>
-      );
+        ))}
+        <h1>Tweets</h1>
+        {data.allTweets.map((tweet) => (
+            <li key={tweet.id}>
+            {tweet.text}/by: {tweet.author.fullName}
+            </li>
+        ))}
+    </ul>
+    );
 }
