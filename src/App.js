@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Movies from "./routes/Movies"
 import Movie from "./routes/Movie"
+import client from "./client";
 
 function App() {
   return (
