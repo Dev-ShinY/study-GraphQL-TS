@@ -2,6 +2,16 @@ import styled from "styled-components";
 import { gql, useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
 
+interface MoviesType {
+  id: string
+  title: string
+  medium_cover_image: string
+}
+
+interface MoviesData {
+  allMovies: MoviesType[];
+}
+
 const ALL_MOVIES = gql`
   query getMovies {
     allMovies {
@@ -60,7 +70,7 @@ const PosterContainer = styled.div`
   background-color: transparent;
 `;
 
-const PosterBg = styled.div`
+const PosterBg = styled.div<{ background: string }>`
   background-image: url(${(props) => props.background});
   height: 100%;
   width: 100%;
@@ -70,7 +80,9 @@ const PosterBg = styled.div`
 `;
 
 export default function Movies() {
-  const { data, loading } = useQuery(ALL_MOVIES);
+  const { data, loading } = useQuery<MoviesData>(ALL_MOVIES);
+  const movies = data?.allMovies
+
   return (
     <Container>
       <Header>
@@ -78,7 +90,7 @@ export default function Movies() {
       </Header>
       {loading && <Loading>Loading...</Loading>}
       <MoviesGrid>
-        {data?.allMovies?.map((movie) => (
+        {movies?.map((movie: MoviesType) => (
           <PosterContainer key={movie.id}>
             <Link to={`/movies/${movie.id}`}>
               <PosterBg background={movie.medium_cover_image} />
